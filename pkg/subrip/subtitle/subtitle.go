@@ -31,6 +31,3 @@ func New(options ...SubtitleOption) *Subtitle {
 	}
 	return &st
 }
-
-// SubtitleOption - option func to modify new Subtitle struct
-type SubtitleOption func(*Subtitle)

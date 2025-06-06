@@ -1,5 +1,8 @@
 package subtitle
 
+// SubtitleOption - option func to modify new Subtitle struct
+type SubtitleOption func(*Subtitle)
+
 // WithIndex - set index.
 func WithIndex(i int) SubtitleOption {
 	return func(s *Subtitle) {
