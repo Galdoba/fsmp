@@ -39,6 +39,8 @@ func New(options ...SubtitleOption) *Subtitle {
 	return &st
 }
 
+// Parse - Parse raw byte of srt file to slice of Subtitles for further processing.
+// It makes no error checking. Function return zero sized slice of Subtitles if parsing in failed.
 func Parse(bt []byte) []*Subtitle {
 	text := string(bt)
 	lines := strings.Split(text, "\n")
@@ -46,18 +48,42 @@ func Parse(bt []byte) []*Subtitle {
 	// subtitleText := ""
 	title := &Subtitle{}
 	titles := []*Subtitle{}
+	textParts := []string{}
 	for _, line := range lines {
+		// fmt.Println(title)
+		// fmt.Println("parse:", line)
 		switch inBlock {
 		case false:
 			index, err := strconv.Atoi(line)
 			if err != nil {
+				// fmt.Println("index: %v : %v", index, err)
 				continue
 			}
 			inBlock = true
+			// fmt.Println("start block", index)
 			title = New()
 			title.Index = index
 		case true:
-
+			switch title.StartSeconds {
+			case time_unset:
+				start, end, err := parseTimestamps(line)
+				if err == nil {
+					title.StartSeconds = start
+					title.EndSeconds = end
+				}
+			default:
+				switch line {
+				case "":
+					title.Text = strings.Join(textParts, "\n")
+					titles = append(titles, title)
+					textParts = []string{}
+					inBlock = false
+					// fmt.Println("end block", title.Index)
+				default:
+					textParts = append(textParts, line)
+					// fmt.Printf("text added: %v\n", line)
+				}
+			}
 		}
 	}
 	return titles
@@ -65,6 +91,7 @@ func Parse(bt []byte) []*Subtitle {
 
 var timeRegex = regexp.MustCompile(`^(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})$`)
 
+// parseTimestamps - Parse start and end time from srt line. It return error in no timestamps found.
 func parseTimestamps(line string) (float64, float64, error) {
 	sub := timeRegex.FindStringSubmatch(line)
 	start, end := float64(-1.0), float64(-1.0)
@@ -84,4 +111,41 @@ func parseTimestamps(line string) (float64, float64, error) {
 		return -1, -1, fmt.Errorf("no timestamps found")
 	}
 	return start, end, nil
+}
+
+func timestamp(seconds float64) string {
+	milliseconds := int64(seconds * 1000)
+	hh := 0
+	for milliseconds > 3600000 {
+		milliseconds -= 3600000
+		hh++
+	}
+	mm := 0
+	for milliseconds > 60000 {
+		milliseconds -= 60000
+		mm++
+	}
+	ss := 0
+	for milliseconds >= 1000 {
+		milliseconds -= 1000
+		ss++
+	}
+	ms := int(milliseconds)
+	return fmt.Sprintf("%v:%v:%v,%v", hhmmssToString(hh), hhmmssToString(mm), hhmmssToString(ss), millisecondsToString(ms))
+}
+
+func hhmmssToString(num int) string {
+	s := fmt.Sprintf("%v", num)
+	for len(s) < 2 {
+		s = "0" + s
+	}
+	return s
+}
+
+func millisecondsToString(num int) string {
+	s := fmt.Sprintf("%v", num)
+	for len(s) < 3 {
+		s = "0" + s
+	}
+	return s
 }

@@ -17,7 +17,7 @@ type SubRip struct {
 	Key string
 
 	//slice of titles
-	Subtitles []subtitle.Subtitle
+	Subtitles []*subtitle.Subtitle
 
 	maxLinesPerSubtitle        int
 	maxLineWidth               int
@@ -33,11 +33,11 @@ type SubRip struct {
 }
 
 // New - create new SubRip structure
-func New(path string, options ...SubRipOption) error {
+func New(path string, options ...SubRipOption) (*SubRip, error) {
 	sr := SubRip{
 		Source:               path,
 		Key:                  "",
-		Subtitles:            []subtitle.Subtitle{},
+		Subtitles:            []*subtitle.Subtitle{},
 		maxLinesPerSubtitle:  0,
 		maxLineWidth:         0,
 		videoDurationSeconds: 0,
@@ -45,7 +45,12 @@ func New(path string, options ...SubRipOption) error {
 	for _, modify := range options {
 		modify(&sr)
 	}
-	return nil
+	bt, err := readFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("can't create SubRip: %v", err)
+	}
+	sr.Subtitles = subtitle.Parse(bt)
+	return &sr, nil
 }
 
 func (sr *SubRip) Evaluate() error {
