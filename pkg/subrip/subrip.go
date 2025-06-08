@@ -1,6 +1,10 @@
 package subrip
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/Galdoba/fsmp/pkg/subrip/subtitle"
 )
 
@@ -46,4 +50,15 @@ func New(path string, options ...SubRipOption) error {
 
 func (sr *SubRip) Evaluate() error {
 	return nil
+}
+
+func readFile(path string) ([]byte, error) {
+	if !strings.HasSuffix(path, ".srt") {
+		return nil, fmt.Errorf("path is not srt file")
+	}
+	bt, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("read error: %v", err)
+	}
+	return bt, nil
 }
