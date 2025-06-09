@@ -20,6 +20,7 @@ type SubRip struct {
 	originalEncoding string
 	originalLanguage string
 	sourceConfidence int
+	runesByTypes     map[int]int
 
 	maxLinesPerSubtitle        int
 	maxLineWidth               int
@@ -54,6 +55,7 @@ func New(path string, options ...SubRipOption) (*SubRip, error) {
 	sr.originalEncoding = rr.encoding.Charset
 	sr.originalLanguage = rr.encoding.Language
 	sr.sourceConfidence = rr.encoding.Confidence
+	sr.runesByTypes = rr.characterTypes
 	sr.Subtitles = subtitle.Parse(rr.bt)
 	return &sr, nil
 }

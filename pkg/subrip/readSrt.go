@@ -7,15 +7,16 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/Galdoba/fsmp/pkg/text/charset"
 	"github.com/saintfish/chardet"
 	"golang.org/x/text/encoding/charmap"
 )
 
 type readReport struct {
-	bt []byte
-	//charMap  map[string]int
-	encoding chardet.Result
-	err      error
+	bt             []byte
+	characterTypes map[int]int
+	encoding       chardet.Result
+	err            error
 }
 
 // readSRT - Reads file as UTF-8.
@@ -51,7 +52,7 @@ func readSRT(path string) readReport {
 	if !utf8.Valid(bt) {
 		return readError("not a valid UTF-8 encoding")
 	}
-	return readReport{bt: bt, encoding: *encoding, err: nil}
+	return readReport{bt: bt, encoding: *encoding, characterTypes: countCharaterTypes(bt), err: nil}
 }
 
 func readError(format string, args ...interface{}) readReport {
@@ -88,4 +89,13 @@ func decodeWindows1251Toutf8(bt []byte) ([]byte, error) {
 
 func removeCR(bt []byte) []byte {
 	return bytes.ReplaceAll(bt, []byte("\r"), []byte(""))
+}
+
+func countCharaterTypes(bt []byte) map[int]int {
+	text := string(bt)
+	characterTypes := make(map[int]int)
+	for _, r := range text {
+		characterTypes[charset.CharacterType[r]]++
+	}
+	return characterTypes
 }
