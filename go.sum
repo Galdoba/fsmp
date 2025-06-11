@@ -1,5 +1,9 @@
 github.com/BurntSushi/toml v1.5.0 h1:W5quZX/G/csjUnuI8SUYlsHs9M38FC7znL0lIO+DvMg=
 github.com/BurntSushi/toml v1.5.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
+github.com/Galdoba/utils v0.0.0-20250610061347-c5382ffd5094 h1:3oAFduO8Lk4sUGC1uvKnNiLcXVgU7kT8KNHYwVT1uys=
+github.com/Galdoba/utils v0.0.0-20250610061347-c5382ffd5094/go.mod h1:vEkBn9XID1nXBOmQw3SkWVsnvfDLKbbwHZAMedrnSzc=
+github.com/Galdoba/utils v0.0.0-20250610062944-cda3187eb762 h1:hGJ1jlHX1ji9fFEyd5e/Nd9VJqPQyaSlMafs25Q21zA=
+github.com/Galdoba/utils v0.0.0-20250610062944-cda3187eb762/go.mod h1:vEkBn9XID1nXBOmQw3SkWVsnvfDLKbbwHZAMedrnSzc=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d h1:hrujxIzL1woJ7AwssoOcM/tq5JjjG2yYOc8odClEiXA=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 golang.org/x/text v0.26.0 h1:P42AVeLghgTYr4+xUnTRKDMqpar+PtX7KWuNQL21L8M=
