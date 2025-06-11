@@ -16,6 +16,7 @@ const (
 	Number      = "Number"
 	Punctuation = "Punctuation"
 	Space       = "Space"
+	Dangerous   = "Dangerous"
 	Undefined   = " "
 )
 
@@ -93,4 +94,9 @@ func header() []byte {
 	s := fmt.Sprintf("# last updated at %v\n", time.Now().Format(time.DateTime))
 	s += fmt.Sprintf("# file is using toml format. see https://github.com/toml-lang/toml\n\n")
 	return []byte(s)
+}
+
+func (pr *Preset) AddUnknownGlyph(gl string) error {
+	pr.GlyphByType[gl] = Undefined
+	return pr.Save()
 }

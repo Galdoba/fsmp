@@ -153,6 +153,18 @@ func defaultTypes() map[string]string {
 	typesMap["'"] = Punctuation
 	typesMap["@"] = Punctuation
 	typesMap["#"] = Punctuation
+	typesMap[`"`] = Punctuation
+	typesMap["–"] = Punctuation
+	typesMap["—"] = Punctuation
+	typesMap["…"] = Punctuation
+	typesMap["’"] = Punctuation
+	typesMap["("] = Punctuation
+	typesMap[")"] = Punctuation
+	typesMap["«"] = Punctuation
+	typesMap["»"] = Punctuation
+	typesMap["“"] = Punctuation
+	typesMap["”"] = Punctuation
+
 	typesMap[" "] = Space
 	//typesMap["\n"] = "Space"
 	//typesMap["\t"] = "Space"
