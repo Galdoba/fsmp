@@ -19,38 +19,51 @@ func TestNew(t *testing.T) {
 	}
 	lineWidths := make(map[int]int)
 	max := len(fi)
-
+	srEval := SubRipEvaluator{}
 	for i, f := range fi {
 		if i < -1 {
 			continue
 		}
 
 		fmt.Printf("%v/%v\r", i, max)
-		sr, err := New(path + f.Name())
-		if err != nil {
-			fmt.Println(err)
-			continue
+		// sr, err := New(path + f.Name())
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	continue
+		// }
+		rep := srEval.Evaluate(path + f.Name())
+		fmt.Println(f.Name())
+		text := rep.Report()
+		fmt.Println(text)
+		fmt.Println("\n\n====================")
+		if text != "is valid SubRip" {
+			time.Sleep(time.Second * 5)
 		}
-		for _, st := range sr.Subtitles {
-			//fmt.Println(i, f.Name())
-			rep := st.Evaluate()
-			print := false
-			for _, lw := range rep.LineWidths {
-				if lw > 45 {
-					print = true
-				}
-				if lw == 1 {
-					print = true
-				}
-				lineWidths[lw]++
-			}
-			if print {
-				fmt.Printf("file: (%v) %v\n", i, f.Name())
-				st.Print()
-				time.Sleep(time.Second)
-			}
-			//st.Print()
-		}
+		fmt.Print("\033[H\033[2J")
+		//fmt.Println(rep)
+
+		// for _, st := range sr.Subtitles {
+
+		//
+		// 	// rep := subtitle.DefaultEvaluator.Evaluate(*st)
+
+		// 	// print := false
+		// 	// for _, lw := range rep.LineWidths {
+		// 	// 	if lw > 45 {
+		// 	// 		print = true
+		// 	// 	}
+		// 	// 	if lw == 1 {
+		// 	// 		print = true
+		// 	// 	}
+		// 	// 	lineWidths[lw]++
+		// 	// }
+		// 	// if print {
+		// 	// 	fmt.Printf("file: (%v) %v\n", i, f.Name())
+		// 	// 	st.Print()
+		// 	// 	time.Sleep(time.Second)
+		// 	// }
+		// 	// st.Print()
+		// }
 		//fmt.Print("\033[H\033[2J")
 
 		//	if sr.originalLanguage != "" || sr.sourceConfidence != 100 {

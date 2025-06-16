@@ -60,37 +60,113 @@ func New(path string, options ...SubRipOption) (*SubRip, error) {
 	return &sr, nil
 }
 
-func (sr *SubRip) Evaluate() error {
+type FileReport struct {
+	sources        map[string]*SubRip
+	renders        []string
+	FilewiseErrors []error
+	SubtitleErrors map[int][]error
+}
+
+func reportError(err error) FileReport {
+	return FileReport{FilewiseErrors: append([]error{}, fmt.Errorf("nothing to report"))}
+}
+
+type SubRipEvaluator struct {
+}
+
+func (se *SubRipEvaluator) Evaluate(paths ...string) FileReport {
+	if len(paths) < 1 {
+		return reportError(fmt.Errorf("nothing to report"))
+	}
+	srep := FileReport{}
+	srep.sources = make(map[string]*SubRip)
+	srep.SubtitleErrors = make(map[int][]error)
+	for _, path := range paths {
+		//fmt.Println(path)
+		sr, err := New(path)
+		if err != nil {
+			return reportError(fmt.Errorf("%v is not a subtitle", path))
+		}
+		if err := assertTimeGaps(*sr); err != nil {
+			srep.FilewiseErrors = append(srep.FilewiseErrors, err)
+		}
+		if err := assertIndexes(*sr); err != nil {
+			srep.FilewiseErrors = append(srep.FilewiseErrors, err)
+		}
+		srep.sources[path] = sr
+		for _, title := range sr.Subtitles {
+			rep := subtitle.DefaultEvaluator.Evaluate(*title)
+			if len(rep.Errs) > 0 {
+				srep.SubtitleErrors[rep.Index] = append([]error{fmt.Errorf(rep.Render)}, rep.Errs...)
+			}
+		}
+	}
+	//index positions
+
+	return srep
+}
+
+func (frep *FileReport) Report() string {
+	if len(frep.FilewiseErrors) == 0 && len(frep.SubtitleErrors) == 0 {
+		return fmt.Sprintf("is valid SubRip")
+	}
+	s := ""
+	if len(frep.FilewiseErrors) > 0 {
+		s += "file errors:\n"
+		for _, err := range frep.FilewiseErrors {
+			s += fmt.Sprintf("  %v\n", err)
+		}
+	}
+	if len(frep.SubtitleErrors) >= 0 {
+		s += "by index errors:\n"
+		for i := 0; i < 10000; i++ {
+			if errs, ok := frep.SubtitleErrors[i]; ok {
+				for _, err := range errs {
+					s += fmt.Sprintf("\n%v\n", err)
+				}
+			}
+		}
+
+	}
+	return s
+}
+
+func assertIndexes(sr SubRip) error {
+	unmatchedIndexes := []int{}
+	for i, s := range sr.Subtitles {
+		switch s.Index == i+1 {
+		case true:
+		case false:
+			unmatchedIndexes = append(unmatchedIndexes, s.Index)
+		}
+	}
+	if len(unmatchedIndexes) > 0 {
+		return fmt.Errorf("file contains %v invalid indexes:\n%v", len(unmatchedIndexes), unmatchedIndexes)
+	}
 	return nil
 }
 
-// func readFileAsUTF8(path string) ([]byte, error) {
-// 	if !strings.HasSuffix(path, ".srt") {
-// 		return nil, fmt.Errorf("path is not srt file")
-// 	}
-// 	bt, err := os.ReadFile(path)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("read error: %v", err)
-// 	}
-// 	encoding, err := detectEncoding(bt)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	switch encoding.Charset {
-// 	case "windows-1251":
-// 		utf8bt, err := decodeWindows1251Toutf8(bt)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		bt = utf8bt
-// 	case "UTF-8-BOM":
-// 		bt = removeBOM(bt)
-// 	case "UTF-8":
-// 	default:
-// 		return nil, fmt.Errorf("unsupported charset: %v", encoding.Charset)
-// 	}
-// 	if !utf8.Valid(bt) {
-// 		return nil, fmt.Errorf("not a valid UTF-8 encoding")
-// 	}
-// 	return bt, nil
-// }
+func assertTimeGaps(sr SubRip) error {
+	gaps := []string{}
+	lastEnd := 0.0
+	for i, s := range sr.Subtitles {
+		gap := s.StartSeconds - lastEnd
+		if gap >= 35*60 {
+			switch i {
+			case 0:
+				gaps = append(gaps, fmt.Sprintf("index [start=>%v]: gap %0.3f seconds", s.Index, gap))
+			default:
+				gaps = append(gaps, fmt.Sprintf("index [%v=>%v]: gap %0.3f seconds", sr.Subtitles[i-1].Index, s.Index, gap))
+			}
+		}
+		lastEnd = s.EndSeconds
+	}
+	if len(gaps) > 0 {
+		s := "gaps:"
+		for _, gap := range gaps {
+			s += "\n" + gap
+		}
+		return fmt.Errorf(s)
+	}
+	return nil
+}

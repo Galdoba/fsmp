@@ -2,6 +2,8 @@ github.com/BurntSushi/toml v1.5.0 h1:W5quZX/G/csjUnuI8SUYlsHs9M38FC7znL0lIO+DvMg
 github.com/BurntSushi/toml v1.5.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/Galdoba/utils v0.0.0-20250610062944-cda3187eb762 h1:hGJ1jlHX1ji9fFEyd5e/Nd9VJqPQyaSlMafs25Q21zA=
 github.com/Galdoba/utils v0.0.0-20250610062944-cda3187eb762/go.mod h1:vEkBn9XID1nXBOmQw3SkWVsnvfDLKbbwHZAMedrnSzc=
+github.com/Galdoba/utils v0.0.0-20250616033542-8e29d20c0e66 h1:i7vXsXt0W1JVm7yLyafpoPm3wmiIkXowYoFrqayy1Qw=
+github.com/Galdoba/utils v0.0.0-20250616033542-8e29d20c0e66/go.mod h1:vEkBn9XID1nXBOmQw3SkWVsnvfDLKbbwHZAMedrnSzc=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=
