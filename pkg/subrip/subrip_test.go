@@ -5,13 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/Galdoba/fsmp/pkg/text/charset"
 )
 
 func TestNew(t *testing.T) {
-	path := `\\192.168.31.4\buffer\IN\CASES\srt\`
+	path := `/home/galdoba/workbench/fsmp/srt/`
 	fi, err := os.ReadDir(path)
 	if err != nil {
 		fmt.Println(err)
@@ -37,9 +36,9 @@ func TestNew(t *testing.T) {
 		fmt.Println(text)
 		fmt.Println("\n\n====================")
 		if text != "is valid SubRip" {
-			time.Sleep(time.Second * 5)
+			// time.Sleep(time.Second * 5)
 		}
-		fmt.Print("\033[H\033[2J")
+		// fmt.Print("\033[H\033[2J")
 		//fmt.Println(rep)
 
 		// for _, st := range sr.Subtitles {
